@@ -1,22 +1,26 @@
-import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { map } from "rxjs/operators/";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators/';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class AuthService {
-  baseUrl = "http://localhost:5000/api/auth/";
+  baseUrl = 'http://localhost:5000/api/auth/';
   constructor(private service: HttpClient) {}
 
   login(model) {
-    return this.service.post(this.baseUrl + "login", model).pipe(
+    return this.service.post(this.baseUrl + 'login', model).pipe(
       map((response: any) => {
         const user = response;
         if (user) {
-          localStorage.setItem("token", user.token);
+          localStorage.setItem('token', user.token);
         }
       })
     );
+  }
+
+  registerUser(model) {
+    return this.service.post(this.baseUrl + 'register', model);
   }
 }
