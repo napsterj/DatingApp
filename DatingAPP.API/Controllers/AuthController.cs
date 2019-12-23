@@ -44,38 +44,38 @@ namespace DatingAPP.API.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
+                throw new Exception("Error 1 occured.");
+                var user = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password.ToLower());
 
-            var user = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password.ToLower());
+                if (user == null)
+                {
+                    return Unauthorized();
+                }
 
-            if (user == null)
-            {
-                return Unauthorized();
-            }
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier.ToString(), user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Username.ToString())
+                };
 
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier.ToString(), user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username.ToString())
-            };
+                var key = new SymmetricSecurityKey(Encoding.UTF8
+                            .GetBytes(_config.GetSection("AppSettings:Token").Value));
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8
-                        .GetBytes(_config.GetSection("AppSettings:Token").Value));
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(claims),
+                    Expires = DateTime.Now.AddDays(1),
+                    SigningCredentials = creds
+                };
 
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(1),
-                SigningCredentials = creds
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return Ok(new
-            {
-                token = tokenHandler.WriteToken(token)
-            });
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                return Ok(new
+                {
+                    token = tokenHandler.WriteToken(token)
+                });
         }
     }
 }
