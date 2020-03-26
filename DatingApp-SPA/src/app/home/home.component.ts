@@ -8,8 +8,10 @@ import { HttpClient } from '@angular/common/http';
 })
 export class HomeComponent {
   registerMode = false;
+  
   constructor(private http: HttpClient) {}
 
+  
   registerToggle() {
     this.registerMode = true;
   }

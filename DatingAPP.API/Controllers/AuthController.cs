@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -25,7 +26,7 @@ namespace DatingAPP.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Regitser(UserForRegisterDto userForRegisterDto)
+        public async Task<IActionResult> Registser(UserForRegisterDto userForRegisterDto)
         {
 
             userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
@@ -41,7 +42,7 @@ namespace DatingAPP.API.Controllers
             return StatusCode(201);
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
                 var user = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password.ToLower());
